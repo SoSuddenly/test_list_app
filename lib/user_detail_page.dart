@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'user_model.dart';
 import 'api_service.dart';
 
@@ -11,14 +12,12 @@ class UserDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('User Details')),
-      body: FutureBuilder<Map<String, dynamic>>(
-        future: ApiService.fetchAdditionalUserInfo(
-            user.id), // Отримання додаткової інформації
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      body: GetX<ApiService>(
+        init: ApiService(), // Ініціалізуйте ApiService
+        builder: (apiService) {
+          if (apiService.isFetchingAdditionalInfo) {
             return Center(child: CircularProgressIndicator());
-          } else if (!snapshot.hasData) {
-            final additionalInfo = <String, dynamic>{};
+          } else if (!apiService.hasAdditionalInfo) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -37,13 +36,12 @@ class UserDetailPage extends StatelessWidget {
                   Text(user.email),
                   SizedBox(height: 20),
                   Text('ID: ${user.id}'),
-                  Text('Position: ${additionalInfo['position']}'),
                   // Додаткові дані тут
                 ],
               ),
             );
           } else {
-            final additionalInfo = snapshot.data!;
+            final additionalInfo = apiService.additionalUserInfo;
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -62,7 +60,8 @@ class UserDetailPage extends StatelessWidget {
                   Text(user.email),
                   SizedBox(height: 20),
                   Text('ID: ${additionalInfo['id']}'),
-                  Text('Position: ${additionalInfo['position']}'),
+                  Text(
+                      'Position: ${additionalInfo['position']}'), // Позиція з додатковою інформацією
                   // Додаткові дані тут
                 ],
               ),

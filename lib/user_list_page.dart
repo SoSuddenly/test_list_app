@@ -55,6 +55,7 @@ class UserListPage extends StatelessWidget {
               final user = controller.users[index];
               return GestureDetector(
                 onTap: () {
+                  //print('user id =${user.id}');
                   Get.to(() => UserDetailPage(user: user));
                 },
                 child: Card(

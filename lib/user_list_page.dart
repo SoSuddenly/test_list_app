@@ -21,7 +21,13 @@ class UserListController extends GetxController {
     final apiData = await ApiService.fetchUsers(currentPage);
     final newUsers = apiData.map((item) => UserModel.fromJson(item)).toList();
 
-    users.addAll(newUsers);
+    // Перевірка наявності користувача перед додаванням
+    for (var newUser in newUsers) {
+      if (!users.any((user) => user.id == newUser.id)) {
+        users.add(newUser);
+      }
+    }
+
     offlineUsers.assignAll(users);
     ApiService.saveOfflineUsers(users);
     currentPage++;

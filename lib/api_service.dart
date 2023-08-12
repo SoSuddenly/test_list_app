@@ -21,7 +21,22 @@ class ApiService extends GetxController {
 
   static Future<void> saveOfflineUsers(List<UserModel> users) async {
     final prefs = await SharedPreferences.getInstance();
-    final userJsonList = users.map((user) => user.toJson()).toList();
+    final existingUsersJson = prefs.getString('offlineUsers');
+    final existingUsers = <UserModel>[];
+
+    if (existingUsersJson != null) {
+      final existingUserData = json.decode(existingUsersJson) as List<dynamic>;
+      existingUsers
+          .addAll(existingUserData.map((item) => UserModel.fromJson(item)));
+    }
+
+    final newUserIds = users.map((user) => user.id);
+    final filteredExistingUsers =
+        existingUsers.where((user) => !newUserIds.contains(user.id)).toList();
+    filteredExistingUsers.addAll(users);
+
+    final userJsonList =
+        filteredExistingUsers.map((user) => user.toJson()).toList();
     prefs.setString('offlineUsers', json.encode(userJsonList));
   }
 

@@ -8,8 +8,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      theme:
-          ThemeData(primaryColor: Colors.teal), // Зміна теми на теаловий колір
+      theme: ThemeData(primaryColor: Colors.teal),
       title: 'User List App',
       home: UserListPage(),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'user_card.dart';
 import 'user_model.dart';
 import 'user_detail_page.dart';
 import 'api_service.dart';
@@ -42,11 +43,6 @@ class UserListController extends GetxController {
 class UserListPage extends StatelessWidget {
   final controller = Get.put(UserListController());
 
-  void _clearSharedPreferences() async {
-    await ApiService.clearSharedPreferences();
-    // Очистити дані у контролерах або перезавантажити сторінку, якщо потрібно
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,35 +55,7 @@ class UserListPage extends StatelessWidget {
           itemBuilder: (context, index) {
             if (index < controller.users.length) {
               final user = controller.users[index];
-              return GestureDetector(
-                onTap: () {
-                  //print('user id =${user.id}');
-                  Get.to(() => UserDetailPage(user: user));
-                },
-                child: Card(
-                    child: Column(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.rectangle,
-                          image: DecorationImage(
-                            image: NetworkImage(user.avatarUrl),
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20), // Проміжок між зображенням і текстом
-                    Text(
-                      '${user.firstName} ${user.lastName}',
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    SizedBox(height: 10),
-                    Text(user.email),
-                  ],
-                )),
-              );
+              return UserCard(user: user);
             } else {
               controller.fetchUsers();
               return Center(child: CircularProgressIndicator());
@@ -95,11 +63,6 @@ class UserListPage extends StatelessWidget {
           },
         );
       }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _clearSharedPreferences,
-        tooltip: 'Clear SharedPreferences',
-        child: Icon(Icons.delete),
-      ),
     );
   }
 }

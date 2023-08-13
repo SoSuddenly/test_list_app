@@ -26,7 +26,7 @@ class UserDetailsWidget extends StatelessWidget {
               shape: BoxShape.rectangle,
               image: DecorationImage(
                 image: NetworkImage(user.avatarUrl),
-                fit: BoxFit.fill,
+                fit: BoxFit.contain,
               ),
             ),
           ),

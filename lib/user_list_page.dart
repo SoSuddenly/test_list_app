@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 
 import 'user_card.dart';
 import 'user_model.dart';
-import 'user_detail_page.dart';
 import 'api_service.dart';
 
 class UserListController extends GetxController {

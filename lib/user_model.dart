@@ -22,7 +22,7 @@ class UserModel {
       avatarUrl: json['avatar'] ?? '',
     );
   }
-
+  //на всякий випадок думав треба відправляти і тд
   Map<String, dynamic> toJson() {
     return {
       'id': id,

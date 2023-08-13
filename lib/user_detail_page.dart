@@ -14,7 +14,7 @@ class UserDetailPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text('User Details')),
       body: GetX<ApiService>(
-        init: ApiService(), // Ініціалізуйте ApiService
+        init: ApiService(),
         builder: (apiService) {
           return UserDetailsWidget(
             user: user,

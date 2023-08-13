@@ -8,7 +8,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      theme: ThemeData(primaryColor: Colors.teal),
+      theme: ThemeData(
+        primaryColor: Colors.teal,
+        appBarTheme: AppBarTheme(backgroundColor: Colors.teal),
+      ),
       title: 'User List App',
       home: UserListPage(),
     );

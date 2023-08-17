@@ -7,18 +7,6 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 
 class ApiService extends GetxController {
   static const String apiUrl = 'https://reqres.in/api';
-
-  // static Future<List<Map<String, dynamic>>> fetchUsers(int page) async {
-  //   try {
-  //     final response = await http.get(Uri.parse('$apiUrl/users?page=$page'));
-  //     final data = json.decode(response.body)['data']
-  //         as List<dynamic>?;
-  //     return List<Map<String, dynamic>>.from(data ?? []);
-  //   } catch (e) {
-  //     print('Error fetching users: $e');
-  //     return [];
-  //   }
-  // }
   static Future<void> saveOfflineUsers(List<UserModel> users) async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -149,8 +137,6 @@ class ApiService extends GetxController {
         print('No internet connection');
       }
     } catch (e) {
-      print('Error fetching users from API: $e');
-
       // Отримати оновлений список користувачів з локального сховища
       final offlineUsers = await fetchOfflineUsers();
       usersData = offlineUsers.map((user) => user.toJson()).toList();

@@ -7,18 +7,16 @@ import 'api_service.dart';
 
 class UserListController extends GetxController {
   var users = <UserModel>[].obs;
-  var offlineUsers = <UserModel>[].obs;
   var currentPage = 1;
 
   @override
   void onInit() {
     super.onInit();
-    fetchOfflineUsers();
     fetchUsers();
   }
 
   void fetchUsers() async {
-    final apiData = await ApiService.fetchUsers(currentPage);
+    final apiData = await ApiService.fetchUsersWithFallback(currentPage);
     final newUsers = apiData.map((item) => UserModel.fromJson(item)).toList();
 
     // Перевірка наявності користувача перед додаванням
@@ -27,15 +25,7 @@ class UserListController extends GetxController {
         users.add(newUser);
       }
     }
-
-    offlineUsers.assignAll(users);
-    ApiService.saveOfflineUsers(users);
     currentPage++;
-  }
-
-  void fetchOfflineUsers() async {
-    final offlineData = await ApiService.fetchOfflineUsers();
-    offlineUsers.assignAll(offlineData);
   }
 }
 

@@ -3,41 +3,54 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart';
 import 'user_model.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class ApiService extends GetxController {
   static const String apiUrl = 'https://reqres.in/api';
 
-  static Future<List<Map<String, dynamic>>> fetchUsers(int page) async {
-    try {
-      final response = await http.get(Uri.parse('$apiUrl/users?page=$page'));
-      final data = json.decode(response.body)['data']
-          as List<dynamic>?; // Додав "?" для забезпечення нуль-безпечності
-      return List<Map<String, dynamic>>.from(data ?? []);
-    } catch (e) {
-      print('Error fetching users: $e');
-      return [];
-    }
-  }
-
+  // static Future<List<Map<String, dynamic>>> fetchUsers(int page) async {
+  //   try {
+  //     final response = await http.get(Uri.parse('$apiUrl/users?page=$page'));
+  //     final data = json.decode(response.body)['data']
+  //         as List<dynamic>?;
+  //     return List<Map<String, dynamic>>.from(data ?? []);
+  //   } catch (e) {
+  //     print('Error fetching users: $e');
+  //     return [];
+  //   }
+  // }
   static Future<void> saveOfflineUsers(List<UserModel> users) async {
     final prefs = await SharedPreferences.getInstance();
+
+    // Отримання раніше збереженого JSON-рядка зі списком користувачів
     final existingUsersJson = prefs.getString('offlineUsers');
+
+    // Створення списку для існуючих користувачів
     final existingUsers = <UserModel>[];
 
+    // Перевірка, чи є раніше збережений JSON-рядок
     if (existingUsersJson != null) {
       final existingUserData = json.decode(existingUsersJson) as List<dynamic>;
       existingUsers
           .addAll(existingUserData.map((item) => UserModel.fromJson(item)));
     }
 
-    final newUserIds = users.map((user) => user.id);
-    final filteredExistingUsers =
-        existingUsers.where((user) => !newUserIds.contains(user.id)).toList();
-    filteredExistingUsers.addAll(users);
+    // Додавання нових користувачів до списку існуючих користувачів
+    existingUsers.addAll(users);
 
-    final userJsonList =
-        filteredExistingUsers.map((user) => user.toJson()).toList();
+    // Перетворення списку UserModel в список JSON-представлень користувачів (Map)
+    final userJsonList = existingUsers.map((user) => user.toJson()).toList();
+
+    // Збереження списку JSON-представлень користувачів у SharedPreferences
     prefs.setString('offlineUsers', json.encode(userJsonList));
+
+    // Виведення кількості збережених користувачів
+    print('Total users saved offline: ${userJsonList.length}');
+  }
+
+  static Future<void> clearOfflineUsers() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove('offlineUsers'); // Видалити ключ, пов'язаний зі списком
   }
 
   static Future<List<UserModel>> fetchOfflineUsers() async {
@@ -107,8 +120,50 @@ class ApiService extends GetxController {
     return null;
   }
 
-  static Future<void> clearSharedPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+  static Future<List<Map<String, dynamic>>> fetchUsersWithFallback(
+      int page) async {
+    List<Map<String, dynamic>> usersData = [];
+
+    try {
+      final connectivityResult = await (Connectivity().checkConnectivity());
+      if (connectivityResult != ConnectivityResult.none) {
+        final response = await http.get(Uri.parse('$apiUrl/users?page=$page'));
+        final data = json.decode(response.body)['data'] as List<dynamic>?;
+
+        if (data != null) {
+          List<UserModel> users = List<UserModel>.from(
+              data.map((item) => UserModel.fromJson(item)));
+
+          // Якщо це перша порція користувачів, очистити старий список
+          if (page == 1) {
+            clearOfflineUsers(); // Очищення старого списку
+          }
+
+          // Оновлена логіка збереження користувачів
+          saveOfflineUsers(users);
+
+          // Конвертувати список UserModel у список JSON-представлень користувачів (Map)
+          usersData = users.map((user) => user.toJson()).toList();
+        }
+      } else {
+        print('No internet connection');
+      }
+    } catch (e) {
+      print('Error fetching users from API: $e');
+
+      // Отримати оновлений список користувачів з локального сховища
+      final offlineUsers = await fetchOfflineUsers();
+      usersData = offlineUsers.map((user) => user.toJson()).toList();
+
+      print('Fetched users from local storage: ${offlineUsers.length}');
+    }
+
+    if (usersData.isEmpty) {
+      // Отримати оновлений список користувачів з локального сховища
+      final offlineUsers = await fetchOfflineUsers();
+      usersData = offlineUsers.map((user) => user.toJson()).toList();
+    }
+
+    return usersData;
   }
 }

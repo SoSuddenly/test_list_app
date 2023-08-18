@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'user_card.dart';
-import 'user_list_controller.dart'; // Імпортуємо новий контролер
+import 'user_list_controller.dart';
 
 class UserListPage extends StatelessWidget {
   final controller = Get.put(UserListController());
@@ -16,6 +16,7 @@ class UserListPage extends StatelessWidget {
           gridDelegate:
               SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
           itemCount: controller.users.length + 1,
+          controller: controller.scrollController,
           itemBuilder: (context, index) {
             if (index < controller.users.length) {
               final user = controller.users[index];

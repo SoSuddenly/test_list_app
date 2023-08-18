@@ -9,7 +9,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       theme: ThemeData(
-        appBarTheme: AppBarTheme(backgroundColor: Colors.teal),
+        appBarTheme: const AppBarTheme(backgroundColor: Colors.teal),
       ),
       title: 'User List App',
       home: UserListPage(),

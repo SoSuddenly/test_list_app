@@ -5,6 +5,7 @@ class UserModel {
   final String email;
   final String avatarUrl;
 
+  //картинки не зберігаємо ніде. нема інтернету - тільки дані щоб не загаджувати пам'ять.
   UserModel({
     required this.id,
     required this.firstName,
@@ -22,7 +23,7 @@ class UserModel {
       avatarUrl: json['avatar'] ?? '',
     );
   }
-  //на всякий випадок думав треба відправляти і тд
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'user_model.dart';
-import 'api_service.dart';
+import 'api_service_memory.dart';
 
 class UserDetailsWidget extends StatelessWidget {
   final UserModel user;

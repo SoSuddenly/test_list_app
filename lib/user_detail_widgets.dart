@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'image_provider.dart';
 import 'user_model.dart';
-import 'api_service_memory.dart';
 
 class UserDetailsWidget extends StatelessWidget {
   final UserModel user;
   final Map<String, dynamic>? additionalInfo;
+  final bool hasInternet;
 
-  UserDetailsWidget({required this.user, this.additionalInfo});
+  UserDetailsWidget(
+      {required this.user, this.additionalInfo, required this.hasInternet});
 
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double avatarSize = screenWidth * 2 / 3;
+
+    ImageProvider imageProvider = getImageProvider(user.avatarUrl, hasInternet);
 
     return Center(
       child: Column(
@@ -25,7 +28,7 @@ class UserDetailsWidget extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.rectangle,
               image: DecorationImage(
-                image: NetworkImage(user.avatarUrl),
+                image: imageProvider,
                 fit: BoxFit.contain,
               ),
             ),

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'user_model.dart';
 import 'api_service_memory.dart';
 import 'user_detail_widgets.dart';
+import 'package:get/get.dart';
 
 class UserDetailPage extends StatelessWidget {
   final UserModel user;
+  final bool hasInternet;
 
-  UserDetailPage({required this.user});
+  UserDetailPage({required this.user, required this.hasInternet});
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +22,7 @@ class UserDetailPage extends StatelessWidget {
             additionalInfo: apiService.hasAdditionalInfo
                 ? apiService.additionalUserInfo
                 : null,
+            hasInternet: hasInternet, // Використання функції
           );
         },
       ),

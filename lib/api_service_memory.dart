@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart';
 import 'user_model.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'internet_utils.dart';
 
 class ApiService extends GetxController {
   static const String apiUrl = 'https://reqres.in/api';
@@ -107,8 +107,9 @@ class ApiService extends GetxController {
     List<Map<String, dynamic>> usersData = [];
 
     try {
-      final connectivityResult = await (Connectivity().checkConnectivity());
-      if (connectivityResult != ConnectivityResult.none) {
+      final hasInternet = await InternetUtils.hasInternetConnection();
+
+      if (hasInternet) {
         print('Fetching users online for page $page');
         final response = await http.get(Uri.parse('$apiUrl/users?page=$page'));
         final data = json.decode(response.body)['data'] as List<dynamic>?;
